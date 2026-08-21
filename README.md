@@ -1,3 +1,4 @@
+```markdown
 # GenAI SQL Analytics and Financial Reporting
 
 An end-to-end Generative BI application for exploring financial sales data with natural language. The project combines synthetic data generation, DuckDB analytics, LangChain text-to-SQL, Ollama, and a multi-tab Streamlit dashboard.
@@ -13,6 +14,22 @@ The dashboard provides:
 - CFO-style executive narrative generation.
 - Statistical anomaly detection using revenue and z-scores.
 - A Power BI workbook in `dashboard/` for executive reporting.
+
+---
+
+## 📊 Dashboard Showcase
+
+| Power BI Executive Reporting | Streamlit GenAI Workspace |
+| :---: | :---: |
+| ![Power BI Dashboard](assets/powerbi_dashboard.png) | ![Streamlit App](assets/streamlit_app.png) |
+
+| CFO Executive Briefing | Financial Anomaly Radar |
+| :---: | :---: |
+| ![CFO Briefing](assets/cfo_briefing.png) | ![Anomaly Radar](assets/anomaly_radar.png) |
+
+👉 **[Launch Live Streamlit App](https://your-app-name.streamlit.app)** | 👉 **[View Live Power BI Report](https://app.powerbi.com)**
+
+---
 
 ## Technology Stack
 
@@ -30,6 +47,11 @@ The dashboard provides:
 
 ```text
 .
+├── assets/                       # Dashboard preview images
+│   ├── powerbi_dashboard.png
+│   ├── streamlit_app.png
+│   ├── cfo_briefing.png
+│   └── anomaly_radar.png
 ├── data/
 │   ├── financial_sales.csv       # Generated sales data
 │   └── generate_data.py          # Synthetic data generator
@@ -45,13 +67,14 @@ The dashboard provides:
 │   └── pipeline.py               # Natural language to SQL pipeline
 ├── requirements.txt
 └── README.md
+
 ```
 
 ## Prerequisites
 
-- Python 3.10 or newer
-- Ollama installed and running
-- Enough memory for the selected local model
+* Python 3.10 or newer
+* Ollama installed and running
+* Enough memory for the selected local model
 
 The default model is intentionally small for machines with approximately 6-8 GB RAM. Larger models such as `llama3` may fail to load on low-memory systems.
 
@@ -63,12 +86,14 @@ From the project root on Windows:
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
+
 ```
 
 Install the default Ollama model:
 
 ```bat
 ollama pull qwen2.5:1.5b
+
 ```
 
 ## Generate or Refresh Data
@@ -77,6 +102,7 @@ The repository includes a generated CSV. To recreate it with 2,500 records and i
 
 ```bat
 venv\Scripts\python.exe data\generate_data.py
+
 ```
 
 The Streamlit dashboard loads the CSV into a private in-memory DuckDB connection when it starts, so multiple browser sessions do not compete for a file lock. `finance_analytics.db` remains available for separate local reporting or inspection workflows.
@@ -86,6 +112,7 @@ The Streamlit dashboard loads the CSV into a private in-memory DuckDB connection
 ```bat
 venv\Scripts\activate
 streamlit run src\app.py
+
 ```
 
 Streamlit will display the local URL in the terminal, normally `http://localhost:8501`.
@@ -99,6 +126,7 @@ For Command Prompt:
 ```bat
 set OLLAMA_MODEL=qwen2.5:1.5b
 streamlit run src\app.py
+
 ```
 
 For PowerShell:
@@ -106,6 +134,7 @@ For PowerShell:
 ```powershell
 $env:OLLAMA_MODEL = "qwen2.5:1.5b"
 streamlit run src\app.py
+
 ```
 
 Any model specified here must already be installed with `ollama pull <model-name>`.
@@ -114,20 +143,21 @@ Any model specified here must already be installed with `ollama pull <model-name
 
 Try these in the Text-to-SQL workspace:
 
-- `What are the top 3 regions by net revenue and total profit margin?`
-- `Which product generated the most revenue?`
-- `Show operating cost by department.`
-- `What is the monthly net revenue trend?`
+* `What are the top 3 regions by net revenue and total profit margin?`
+* `Which product generated the most revenue?`
+* `Show operating cost by department.`
+* `What is the monthly net revenue trend?`
 
 ## Data Flow
 
 ```mermaid
 flowchart LR
-	A[Data generator] --> B[financial_sales.csv]
-	B --> C[DuckDB sales table]
-	C --> D[LangChain and Ollama]
-	D --> E[Streamlit dashboard]
-	C --> F[Power BI report]
+    A[Data generator] --> B[financial_sales.csv]
+    B --> C[DuckDB sales table]
+    C --> D[LangChain and Ollama]
+    D --> E[Streamlit dashboard]
+    C --> F[Power BI report]
+
 ```
 
 ## GitHub Setup
@@ -139,8 +169,9 @@ git init
 git branch -M main
 git add .
 git commit -m "feat: add GenAI SQL analytics dashboard"
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+git remote add origin [https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git)
 git push -u origin main
+
 ```
 
 Replace `YOUR_USERNAME` and `YOUR_REPOSITORY` with the actual GitHub values. The `.gitignore` excludes the virtual environment, local DuckDB files, environment files, Python cache files, and generated CSV data.
@@ -160,11 +191,11 @@ Before deploying, complete the following:
 
 The current project is designed as a local demonstration. For production use, add:
 
-- Read-only database credentials and an explicit SQL statement allowlist. The local pipeline currently permits one `SELECT` statement only.
-- Validation for generated SQL before execution, including input length, write/DDL keywords, and multiple statements.
-- Prompt and input limits to reduce misuse and resource exhaustion.
-- Automated tests for generated SQL, database queries, and dashboard startup.
-- Monitoring for model failures, query latency, and anomalous outputs.
+* Read-only database credentials and an explicit SQL statement allowlist. The local pipeline currently permits one `SELECT` statement only.
+* Validation for generated SQL before execution, including input length, write/DDL keywords, and multiple statements.
+* Prompt and input limits to reduce misuse and resource exhaustion.
+* Automated tests for generated SQL, database queries, and dashboard startup.
+* Monitoring for model failures, query latency, and anomalous outputs.
 
 ## Scheduled Data Refresh
 
@@ -172,9 +203,9 @@ GitHub Actions runs `data/generate_data.py` weekly and on demand through `.githu
 
 ## Deployment Notes
 
-- **Streamlit Community Cloud:** suitable when the LLM is changed to a hosted provider. A local Ollama process is not available inside Community Cloud by default.
-- **Render or AWS EC2:** suitable for running Streamlit alongside Ollama, subject to CPU, RAM, storage, and model download requirements.
-- **Power BI Service:** publish `dashboard/financial_kpis.pbix` from Power BI Desktop, then configure credentials and scheduled refresh for the chosen data source.
+* **Streamlit Community Cloud:** suitable when the LLM is changed to a hosted provider. A local Ollama process is not available inside Community Cloud by default.
+* **Render or AWS EC2:** suitable for running Streamlit alongside Ollama, subject to CPU, RAM, storage, and model download requirements.
+* **Power BI Service:** publish `dashboard/financial_kpis.pbix` from Power BI Desktop, then configure credentials and scheduled refresh for the chosen data source.
 
 ### Deploy to Render with Ollama
 
@@ -192,13 +223,17 @@ The model can be changed with the `OLLAMA_MODEL` environment variable, but the r
 
 For a portfolio presentation, add screenshots or a short recording of:
 
-- The KPI dashboard and filters.
-- A natural-language question and its generated SQL.
-- The CFO briefing output.
-- The anomaly radar and Power BI report.
+* The KPI dashboard and filters.
+* A natural-language question and its generated SQL.
+* The CFO briefing output.
+* The anomaly radar and Power BI report.
 
 ## Developer
 
-- **Developer:** Devvrat Welekar
-- **GitHub:** [github.com/devvratwelekar](https://github.com/devvratwelekar)
-- **LinkedIn:** [Devvrat Welekar Profile](https://www.linkedin.com/in/devvrat-welekar/)
+* **Developer:** Devvrat Welekar
+* **GitHub:** [github.com/devvratwelekar](https://github.com/devvratwelekar)
+* **LinkedIn:** [Devvrat Welekar Profile](https://www.linkedin.com/in/devvrat-welekar/)
+
+```
+
+```
