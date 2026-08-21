@@ -75,7 +75,7 @@ Run the dashboard:
 streamlit run src\app.py
 ```
 
-Open the local URL shown by Streamlit, normally `http://localhost:8501`.
+Open the local URL shown by Streamlit, normally `http://localhost:8506`.
 
 The dashboard loads the CSV into a private in-memory DuckDB connection, so multiple browser sessions do not compete for a file lock.
 
