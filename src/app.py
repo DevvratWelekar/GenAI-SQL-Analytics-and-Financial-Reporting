@@ -230,19 +230,24 @@ with tab4:
     st.write("Flags transactions exceeding 2.5 standard deviations from mean net revenue.")
 
     df_anom = filtered_df.copy()
-    df_anom['Z_Score'] = stats.zscore(df_anom['NetRevenue'])
-    anomalies = df_anom[df_anom['Z_Score'].abs() > 2.5].sort_values(by='NetRevenue', ascending=False)
+    if df_anom.empty:
+        st.info("Select at least one region and department to view anomaly analysis.")
+        anomalies = df_anom.assign(Z_Score=pd.Series(dtype=float))
+    else:
+        df_anom['Z_Score'] = stats.zscore(df_anom['NetRevenue'])
+        anomalies = df_anom[df_anom['Z_Score'].abs() > 2.5].sort_values(by='NetRevenue', ascending=False)
 
     st.subheader(f"Flagged Outliers ({len(anomalies)} Transactions Found)")
     st.dataframe(anomalies[['TransactionID', 'Date', 'Product', 'Region', 'Department', 'NetRevenue', 'Z_Score']], use_container_width=True)
 
-    fig_anom = px.scatter(
-        anomalies,
-        x="Date",
-        y="NetRevenue",
-        color="Product",
-        size="NetRevenue",
-        hover_data=['TransactionID', 'Region', 'Department'],
-        title="Detected Outlier Revenue Events"
-    )
-    st.plotly_chart(fig_anom, use_container_width=True)
+    if not anomalies.empty:
+        fig_anom = px.scatter(
+            anomalies,
+            x="Date",
+            y="NetRevenue",
+            color="Product",
+            size="NetRevenue",
+            hover_data=['TransactionID', 'Region', 'Department'],
+            title="Detected Outlier Revenue Events"
+        )
+        st.plotly_chart(fig_anom, use_container_width=True)

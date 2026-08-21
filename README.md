@@ -11,6 +11,7 @@ An end-to-end Generative BI application for exploring financial sales data with 
 - CFO-style executive narrative generation.
 - Revenue anomaly detection using z-scores.
 - Power BI workbook included in `dashboard/`.
+- High-resiliency SQL execution with up to two dedicated repair attempts.
 
 ## Technology Stack
 
@@ -35,6 +36,7 @@ An end-to-end Generative BI application for exploring financial sales data with 
 ├── src/database.py
 ├── src/narrator.py
 ├── src/pipeline.py
+├── tests/test_pipeline.py
 ├── Dockerfile
 ├── render.yaml
 ├── start.sh
@@ -125,6 +127,20 @@ The Text-to-SQL pipeline validates generated SQL before execution. It permits on
 - User prompts longer than 1,000 characters
 
 For production use, also add authentication, rate limiting, read-only credentials, and monitoring.
+
+## Recommendation Coverage
+
+| Recommendation | Implementation |
+| --- | --- |
+| Data ingestion | `data/generate_data.py` creates 2,500 records, calculates margins, and injects 15 revenue anomalies. |
+| Text-to-SQL | LangChain prompt-to-Ollama execution chain generates DuckDB SQL. |
+| Analytics | DuckDB supports grouped reporting, KPI calculations, trend analysis, and anomaly detection. |
+| User interface | Streamlit provides four tabs with filters, Plotly charts, SQL results, and CFO summaries. |
+| Error resiliency | `src/pipeline.py` retries failed SQL with a dedicated repair chain up to two times. |
+
+## Resume Pitch
+
+Built an end-to-end GenAI financial analytics platform that synthesizes 2,500 transactional records, converts natural-language questions into safe DuckDB SQL, provides interactive Streamlit and Plotly reporting, generates CFO summaries, detects revenue anomalies, and repairs failed SQL queries through two controlled LLM retries.
 
 ## Scheduled Data Refresh
 
