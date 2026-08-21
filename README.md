@@ -35,6 +35,9 @@ The dashboard provides:
 │   └── generate_data.py          # Synthetic data generator
 ├── dashboard/
 │   └── financial_kpis.pbix       # Power BI report
+├── .github/
+│   └── workflows/
+│       └── refresh-data.yml      # Weekly dataset refresh artifact
 ├── src/
 │   ├── app.py                    # Streamlit dashboard
 │   ├── database.py               # DuckDB connection and schema helpers
@@ -157,11 +160,33 @@ Before deploying, complete the following:
 
 The current project is designed as a local demonstration. For production use, add:
 
-- Read-only database credentials and an explicit SQL statement allowlist.
-- Validation for generated SQL before execution.
+- Read-only database credentials and an explicit SQL statement allowlist. The local pipeline currently permits one `SELECT` statement only.
+- Validation for generated SQL before execution, including input length, write/DDL keywords, and multiple statements.
 - Prompt and input limits to reduce misuse and resource exhaustion.
 - Automated tests for generated SQL, database queries, and dashboard startup.
 - Monitoring for model failures, query latency, and anomalous outputs.
+
+## Scheduled Data Refresh
+
+GitHub Actions runs `data/generate_data.py` weekly and on demand through `.github/workflows/refresh-data.yml`. The generated CSV is uploaded as a workflow artifact rather than committed back to the repository. Connect the artifact or an external storage location to Power BI for a production refresh process.
+
+## Deployment Notes
+
+- **Streamlit Community Cloud:** suitable when the LLM is changed to a hosted provider. A local Ollama process is not available inside Community Cloud by default.
+- **Render or AWS EC2:** suitable for running Streamlit alongside Ollama, subject to CPU, RAM, storage, and model download requirements.
+- **Power BI Service:** publish `dashboard/financial_kpis.pbix` from Power BI Desktop, then configure credentials and scheduled refresh for the chosen data source.
+
+### Deploy to Render with Ollama
+
+This repository includes `Dockerfile`, `start.sh`, and `render.yaml` for a Docker-based Render deployment. The container starts Ollama, downloads `qwen2.5:1.5b`, and then starts Streamlit on Render's `PORT`.
+
+1. Push the latest commit to GitHub.
+2. In Render, choose **New > Blueprint** and select this repository.
+3. Confirm the service uses `render.yaml` and create the service.
+4. Use a plan with enough memory for Python, Streamlit, Ollama, and the model. The smallest plan may fail during model loading; use at least 2 GB RAM for this configuration.
+5. Wait for the first build to download the Ollama model, then open the generated Render URL.
+
+The model can be changed with the `OLLAMA_MODEL` environment variable, but the replacement model must fit the selected Render plan. Docker is not installed in the current development environment, so validate the image through Render's build logs or a machine with Docker before production use.
 
 ## Portfolio Assets
 

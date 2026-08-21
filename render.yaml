@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: genai-sql-analytics-reporting
+    env: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /_stcore/health
+    envVars:
+      - key: OLLAMA_MODEL
+        value: qwen2.5:1.5b
