@@ -2,7 +2,7 @@ services:
   - type: web
     name: genai-sql-analytics-reporting
     env: docker
-    plan: starter
+    plan: standard
     dockerfilePath: ./Dockerfile
     healthCheckPath: /_stcore/health
     envVars:
