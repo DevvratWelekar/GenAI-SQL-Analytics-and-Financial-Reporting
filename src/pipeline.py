@@ -32,7 +32,10 @@ class TextToSQLPipeline:
         if not user_question or len(user_question) > 1000:
             return "", "Query must contain between 1 and 1,000 characters."
 
-        raw_response = self.chain.invoke({"schema": self.schema, "question": user_question})
+        try:
+            raw_response = self.chain.invoke({"schema": self.schema, "question": user_question})
+        except Exception as error:
+            return "", f"LLM error: {error}"
         clean_sql = raw_response.strip().replace("```sql", "").replace("```", "").replace("`", "")
 
         validation_error = self._validate_read_only_sql(clean_sql)
@@ -52,7 +55,11 @@ class TextToSQLPipeline:
             return "SQL validation error: the model returned an empty query."
         if ";" in normalized_sql.rstrip(";"):
             return "SQL validation error: multiple SQL statements are not allowed."
-        if not normalized_sql.startswith("SELECT ") and normalized_sql != "SELECT":
+        if not (
+            normalized_sql.startswith("SELECT ")
+            or normalized_sql == "SELECT"
+            or normalized_sql.startswith("WITH ")
+        ):
             return "SQL validation error: only SELECT queries are allowed."
         if re.search(r"\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE|COPY|EXPORT|ATTACH|DETACH|CALL|INSTALL|LOAD)\b", normalized_sql):
             return "SQL validation error: write and administrative statements are not allowed."

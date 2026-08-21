@@ -16,6 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt \
 
 COPY data ./data
 COPY src ./src
+RUN python data/generate_data.py
 COPY start.sh .
 RUN chmod +x start.sh
 

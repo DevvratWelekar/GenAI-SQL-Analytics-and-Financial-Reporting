@@ -175,10 +175,10 @@ with tab2:
     st.header("Query Financial Database in Plain English")
     user_q = st.text_input(
         "Enter your query:",
-        "What are the top 3 regions by net revenue and total profit margin?"
+        placeholder="What are the top 3 regions by net revenue?"
     )
 
-    if user_q:
+    if st.button("Run Query", type="primary"):
         with st.spinner("Generating SQL query via LangChain & Ollama..."):
             sql, res = pipeline.execute_query(user_q)
             
@@ -190,7 +190,11 @@ with tab2:
                 st.error(res)
             else:
                 st.dataframe(res, use_container_width=True)
-                if len(res.columns) >= 2 and isinstance(res.iloc[:, 1].values[0], (int, float)):
+                if (
+                    not res.empty
+                    and len(res.columns) >= 2
+                    and pd.api.types.is_numeric_dtype(res.iloc[:, 1])
+                ):
                     fig_dynamic = px.bar(
                         res, 
                         x=res.columns[0], 
