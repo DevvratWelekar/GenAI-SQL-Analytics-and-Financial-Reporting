@@ -13,13 +13,13 @@
 
 </div>
 
----
+--
 
 ## 📌 Overview
 
 This project transforms natural language questions into executable read-only DuckDB SQL queries to explore financial sales data. It features real-time Streamlit visual analytics, automated CFO narrative generation, z-score anomaly detection, an integrated Power BI report, and self-repairing SQL retry chains.
 
----
+--
 
 ## ✨ Key Features
 
